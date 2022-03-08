@@ -1,0 +1,63 @@
+@startuml ClassDiagram
+interface "IComponent" {
+    void simulate(size_t tick)
+    Tristate compute(size_t pin)
+    void setLink(size_t pin, IComponent &other, size_t otherPin)
+    void dump()
+}
+abstract class "AComponent" {
+    string _name
+    size_t nbGates
+    std::vector <AGate *> _gates
+    std::vector<Pin *> _pinLinks
+    size_t _nbPins
+    void assignPin(size_t pin, size_t gate, size_t gatePin, Pin::Type type)
+}
+
+abstract class "AGate" {
+    size_t _nbInputs
+    size_t _nbOutputs
+    std::vector<Pin *> _inPins
+    std::vector<Pin *> _outPins
+    virtual void simulate() = 0
+    virtual void dump(std::string name)
+    virtual size_t getNbPins()
+    void setPin(size_t pin)
+}
+
+class "Pin" {
+    Pin::Type type
+    Pin *_in
+    AGate *_gate
+    Tristate _val
+    Pin::Type getType()
+    Pin *getInput()
+    AGate *getGate()
+    void setGate(AGate *out)
+    void connectPin(Pin *in)
+    Tristate getVal()
+    void setVal(Tristate val)
+}
+
+enum Type {
+    INPUT,
+    OUTPUT
+}
+
+enum Tristate {
+    UNDEFINED
+    FALSE
+    TRUE
+}
+
+class PinException
+class ComponentException
+
+IComponent <|-- AComponent
+AComponent "1" o-- "N" AGate
+AComponent "1" o-- "N" Pin
+AGate "1" o-- "N" Pin
+Pin *-- Type
+Pin *-- PinException
+AComponent *-- ComponentException
+@enduml
